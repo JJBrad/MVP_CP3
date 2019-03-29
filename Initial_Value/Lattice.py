@@ -137,7 +137,7 @@ class lattice(object):
         with open(self.path + "/Data.csv", "w") as outFile:
             outFile.write("n, F\n")
             for r in range(0, len(self.nList)):
-                outFile.write("{},{}".format(self.nList[r], self.FList[r]))
+                outFile.write("{},{}\n".format(self.nList[r], self.FList[r]))
         pyplot.plot(self.nList, self.FList, "k-")
         pyplot.xlabel("Steps (n)")
         pyplot.ylabel("Free Energy")

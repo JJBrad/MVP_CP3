@@ -26,6 +26,15 @@ def readArgs(args, params):
             except:
                 print("Unrecognised value for -x.")
                 exit()
+        elif args[i] in ["-D", "-d"]:
+            try:
+                if args[i+1] == "J":
+                    updates["Dynamics"] = "Jacobi"
+                elif args[i+1] in ["G", "GS"]:
+                    updates["Dynamics"] = "GS"
+                i += 2
+            except:
+                print("Error with -d tag.")
         elif args[i] in ["-N", "-n"]:
             try:
                 updates["tMax"] = int(float(args[i+1]))
@@ -40,7 +49,7 @@ def readArgs(args, params):
             except:
                 print("Unrecognised value for -y.")
                 exit()
-        elif args[i] in ["-D", "-d"]:
+        elif args[i] in ["-S", "-s"]:
             try:
                 if args[i+1] in ["Y", "y"]:
                     updates["Animate"] = True
@@ -49,10 +58,10 @@ def readArgs(args, params):
                     updates["Animate"] = False
                     i += 2
                 else:
-                    print("-D should be followed by 'Y' or 'N'.")
+                    print("-s should be followed by 'Y' or 'N'.")
                     exit()
             except:
-                print("Error with -D tag.")
+                print("Error with -S tag.")
                 exit()
         elif args[i] in ["-i", "-I"]:
             try:
@@ -61,6 +70,20 @@ def readArgs(args, params):
             except:
                 print("Unrecognised value for -I")
                 exit()  
+        elif args[i] in ["-w", "-W"]:
+            try:
+                updates["omega"] = float(args[i+1])
+                i += 2
+            except:
+                print("Unrecognised value for -W")
+                exit()  
+        elif args[i] in ["-t", "-T"]:
+            try:
+                updates["tolerance"] = float(args[i+1])
+                i += 2
+            except:
+                print("Unrecognised value for -T")
+                exit() 
         elif args[i] in ["-a", "-A"]:
             try:
                 updates["a"] = float(args[i+1])

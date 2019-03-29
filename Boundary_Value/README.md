@@ -21,10 +21,12 @@ Optional tags:
 -M <value>        Motility
 -dx <value>       Step size (space)
 -dt <value>       Step size (time)
--i <values>       Initial value of the order parameter.
+-i <value>        Initial value of the order parameter.
 -rs <value>       Set random seed.
--N <values>       Number of sweeps to perform.
--D <Y/N>          Display animation? Yes (Y) or No (N)
+-N <value>        Maximum number of sweeps to perform.
+-T <value>        Tolerance, change in field required to keep running.
+-D <J/GS>         Dynamics for system, (J)acobi or (G)auss-(S)eidel.
+-S <Y/N>          Show animation? (Y)es or (N)o.
 -P <Y/N>          Turn plotting (and measurements) on or off
 -u <value>        Update rate of the animation (sweeps between frames)
 -r <name>         Run name
