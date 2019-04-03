@@ -32,7 +32,7 @@ np.random.seed(params["Seed"]) #None is default, changes each run.
 
 omegaList = []
 nList = []
-for i in range(100, 200, 49):
+for i in range(100, 200, 1):
     omega = float(i)/100.
     lattice = lat.lattice(method="GS",
                           tolerance=params["tolerance"],

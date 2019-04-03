@@ -63,7 +63,7 @@ class lattice(object):
         if os.path.exists(self.path):
             # Don't overwrite previous data
             print("Error. Output path {} already exists and measure is on. Exiting to avoid overwrite.".format(self.path))
-            # exit() #TODO
+            exit()
         elif os.path.exists(self.outDir): # Create run directory
             os.mkdir(self.path)
         else: # Create output and run directories
@@ -156,6 +156,7 @@ class lattice(object):
         """
         # Show 2d heatmap of phi
         self.showCut()
+        
         # Obtain lists of phi as a function of radius
         rVals = []
         phiVals = []
@@ -195,9 +196,9 @@ class lattice(object):
         pyplot.figtext(0.89, 0.84, fitStr, ha="right")
         # Plot phi as a function of radius
         pyplot.plot(rVals, phiVals, "b.", ms=0.5)
-        pyplot.savefig(self.path + "\RvsPhi.png", dpi=150)
         pyplot.xlabel(r"Log$_{10}$ R")
         pyplot.ylabel(r"Log$_{10}$ $\phi$")
+        pyplot.savefig(self.path + "/RvsPhi.png", dpi=150)
         if showPlot: pyplot.show()
         else: pyplot.close()
         
@@ -206,13 +207,48 @@ class lattice(object):
         # Electric field is -del(phi). Get x and y components (assume dx = dy = 1)
         yField = -(np.roll(phiSlice, -1, 0) - np.roll(phiSlice, 1, 0))/(2. * self.dx**2.) # numpy arrays indexed like matrices (Row, column)
         xField = -(np.roll(phiSlice, -1, 1) - np.roll(phiSlice, 1, 1))/(2. * self.dx**2.)
-        norm = np.sqrt(np.square(xField) + np.square(yField))[1:-1,1:-1]
+        norm = np.sqrt(np.square(xField) + np.square(yField)) # Magnitude
+        # Get field magnitude as a function of distance
+        EVals = []
+        rVals = []
+        for i in range(0, self.xDim):
+            for j in range(0, self.yDim):
+                # Calculate distance
+                r = self.dx* np.sqrt(float(i - self.approxMid[0])**2. +\
+                                     float(j - self.approxMid[1])**2.)
+                # Keep results only for r > 0 (to avoid undefined logarithms)
+                if r > 0.:
+                    EVals.append(norm[i,j])
+                    rVals.append(r)
+        
+        # Convert to logarithms
+        rVals = np.log10(rVals)
+        EVals = np.log10(EVals)
+        # Perform fit up to log(R) = 0.75
+        params, var = curve_fit(fitFunc, rVals[rVals < 0.75], EVals[rVals < 0.75], p0=p0)
+        err = np.sqrt(np.diag(var))
+        # Plot
+        xFit = np.linspace(min(rVals), max(rVals), 500)
+        yFit = fitFunc(xFit, *params)
+        pyplot.plot(xFit, yFit, "r--")
+        fitStr = "Fit: $\log(\phi) = ({:.4f} \pm {:.4f})\log(R) + ({:.5f} \pm {:.5f})$".format(params[0], err[0], params[1], err[1])
+        pyplot.figtext(0.89, 0.84, fitStr, ha="right")
+        # Plot phi as a function of radius
+        pyplot.plot(rVals, EVals, "b.", ms=0.5)
+        pyplot.xlabel(r"Log$_{10}$ R")
+        pyplot.ylabel(r"Log$_{10}$ $|E|$")
+        pyplot.savefig(self.path + "/RvsE.png", dpi=150)
+        if showPlot: pyplot.show()
+        else: pyplot.close()
+        
+        
+        norm = norm[1:-1,1:-1]
         xField = xField[1:-1,1:-1]/norm
         yField = yField[1:-1,1:-1]/norm
         xCoords = range(1, self.xDim-1)
         yCoords = range(1, self.yDim-1)
         quiv = pyplot.quiver(xCoords, yCoords, xField, yField)
-        pyplot.savefig(self.path + "\E_Field.png")
+        pyplot.savefig(self.path + "/E_Field.png")
         if showPlot: pyplot.show()
         else: pyplot.close()
         
